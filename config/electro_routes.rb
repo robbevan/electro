@@ -1,6 +1,7 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :pages, :controller => 'electro/pages', :only => [:show]
+  map.resources :pages, :controller => 'electro/pages', :only => [:index, :show]
     
+  map.connect 'sitemap.xml', :controller => 'electro/pages', :action => :index
   map.connect '*name', :controller => 'electro/pages', :action => 'show'
 
   map.namespace(:admin) do |admin|
