@@ -6,5 +6,6 @@ class Electro::PagesController < ApplicationController
     if (@content = (@page.content rescue {})).blank?
       render(:file => "#{RAILS_ROOT}/public/404.html", :status => 404, :layout => false) and return
     end
+    @page_title = @page.name
   end
 end
