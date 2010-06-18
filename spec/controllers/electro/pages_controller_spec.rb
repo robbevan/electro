@@ -5,18 +5,14 @@ describe Electro::PagesController do
   describe "GET /show" do
     before(:each) do
       @page = mock_model(Page, :content => { :body => 'body' })
-      @page.stub!(:name).and_return('name')
+      @page.stub!(:title).and_return('title')
+      @page.stub!(:description).and_return('description')
       Page.stub!(:find).and_return(@page)
     end
     
     describe "with page :name" do
       def do_get
         get :show, :name => ['name']
-      end
-
-      it "should render the show template" do
-        do_get
-        response.should render_template('show')
       end
 
       it "should find the Page" do
@@ -29,9 +25,30 @@ describe Electro::PagesController do
         assigns[:page].should == @page
       end
 
-      it "should assign the Page's content for the view" do
+      it "should assign the Page's meta for the view" do
         do_get
-        assigns[:content].should == @page.content
+        assigns[:page_title].should == @page.title
+        assigns[:page_description].should == @page.description
+      end
+      
+      context "if a :name template exists" do
+        it "should render the :name template" do
+          controller.stub!(:template_exists? => true)
+          do_get
+          response.should render_template('name')
+        end
+      end
+      
+      context "if no :name template exists" do
+        it "should assign the Page's content for the view" do
+          do_get
+          assigns[:content].should == @page.content
+        end
+
+        it "should render the show template" do
+          do_get
+          response.should render_template('show')
+        end
       end
     end
 
@@ -40,14 +57,14 @@ describe Electro::PagesController do
         get :show, :id => "1"
       end
 
-      it "should render the show template" do
-        do_get
-        response.should render_template('show')
-      end
-
       it "should find the Page" do
         Page.should_receive(:find).and_return(@page)
         do_get
+      end
+
+      it "should render the show template" do
+        do_get
+        response.should render_template('show')
       end
     end
 
@@ -63,6 +80,12 @@ describe Electro::PagesController do
       it "should not find the Page" do
         Page.should_receive(:find).and_return(nil)
         do_get
+      end
+
+      it "should not assign the Page's meta for the view" do
+        do_get
+        assigns[:page_title].should be_nil
+        assigns[:page_description].should be_nil
       end
 
       it "should render the 404 page" do
