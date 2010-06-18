@@ -24,6 +24,27 @@ class Page < ActiveRecord::Base
   serialize :content
   
   after_save :update_slug
+  
+  class << self
+    def find_with_published_scope(*args)
+      with_scope(:find => { :conditions => "published = 1" }) do
+        find(*args)
+      end
+    end
+    
+    def find_by_slug(params, options={})
+      conditions = ['slug = ?', (params[:name] ? params[:name].first : params[:id]).to_s.downcase]
+      if options[:admin]
+        find(:first, :conditions => conditions)
+      else
+        find_with_published_scope(:first, :conditions => conditions)
+      end
+    end
+  end
+  
+  def title
+    name
+  end
 
   def slug
     (read_attribute(:slug).blank?) ? underscore(name) : read_attribute(:slug)

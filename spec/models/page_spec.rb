@@ -22,6 +22,31 @@ describe Page do
       @page.should validate_presence_of(:name)
     end
   end
+  
+  describe "class methods" do
+    after(:each) do
+      Page.delete_all
+    end
+    
+    describe ".find_by_slug" do
+      it "should find a published page" do
+        create_page
+        Page.find_by_slug(:id => 'page').should == @page
+      end
+
+      it "should not find an unpublished page" do
+        create_page(:published => false)
+        Page.find_by_slug(:id => 'page').should == nil
+      end
+      
+      context "when admin" do
+        it "should find an unpublished page" do
+          create_page(:published => false)
+          Page.find_by_slug({:id => 'page'}, {:admin => true}).should == @page
+        end
+      end
+    end
+  end
 
   describe "when new" do
     it "should be valid given valid attributes" do
