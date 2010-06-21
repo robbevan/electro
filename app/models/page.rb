@@ -40,6 +40,10 @@ class Page < ActiveRecord::Base
         find_with_published_scope(:first, :conditions => conditions)
       end
     end
+
+    def find_for_sitemap
+      find_with_published_scope(:all, :conditions => ['sitemap = ?', true])
+    end
   end
   
   def title

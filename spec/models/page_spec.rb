@@ -46,6 +46,18 @@ describe Page do
         end
       end
     end
+
+    describe ".find_for_sitemap" do
+      it "should find pages for sitemap" do
+        create_page
+        Page.find_for_sitemap.should == [@page]
+      end
+
+      it "should find pages for sitemap" do
+        create_page(:sitemap => false)
+        Page.find_for_sitemap.should be_blank
+      end
+    end
   end
 
   describe "when new" do
