@@ -7,6 +7,7 @@ describe Electro::PagesController do
       @page = mock_model(Page, :content => { :body => 'body' })
       @page.stub!(:title).and_return('title')
       @page.stub!(:description).and_return('description')
+      @page.stub!(:redirect_to).and_return(nil)
       Page.stub!(:find).and_return(@page)
     end
     
@@ -18,6 +19,14 @@ describe Electro::PagesController do
       it "should find the Page" do
         Page.should_receive(:find).and_return(@page)
         do_get
+      end
+
+      context "if the page is a redirect" do
+        it "should redirect" do
+          @page.stub!(:redirect_to).and_return('http://example.com')
+          do_get
+          response.should redirect_to(@page.redirect_to)
+        end
       end
 
       it "should assign the Page for the view" do

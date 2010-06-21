@@ -3,6 +3,7 @@ class Electro::PagesController < ApplicationController
   # GET /pages/:id
   def show
     if @page = Page.find_by_slug(params, options)
+      redirect_to @page.redirect_to and return unless (@page.redirect_to.blank? rescue true) 
       if template_exists?(template)
         set_meta
         render(:template => template) and return
